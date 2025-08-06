@@ -46,11 +46,12 @@
 <body class="bg-gray-50 text-gray-800">
 
     <!-- Chosen Palette: Warm Neutrals (Grays, Indigo) -->
-    <!-- Application Structure Plan: A dashboard-style SPA featuring a top navigation for key sections (Overview, Schedule, Pillars). The core is an interactive weekly/daily schedule where users can click on a day to view its specific tasks in a dynamic content area. This structure breaks down the dense 30-day plan into manageable, non-linear chunks, making it more of a tool than a static document. A chart provides a visual summary of content distribution, enhancing the dashboard feel. This was chosen to transform the static report into a usable, interactive tool for daily reference, which directly addresses the user's goal of making the content easily consumable. -->
+    <!-- Application Structure Plan: A dashboard-style SPA featuring a top navigation for key sections (Overview, Schedule, Pillars, Highlights). The core is an interactive weekly/daily schedule where users can click on a day to view its specific tasks in a dynamic content area. This structure breaks down the dense 30-day plan into manageable, non-linear chunks, making it more of a tool than a static document. A chart provides a visual summary of content distribution, enhancing the dashboard feel. The new Highlights section provides a dedicated overview of the highlight strategy, including creative names and content descriptions, making this crucial element of Instagram strategy easily digestible. This was chosen to transform the static report into a usable, interactive tool for daily reference, which directly addresses the user's goal of making the content easily consumable. -->
     <!-- Visualization & Content Choices: 
         - Report Info: Core Strategy & Pillars -> Goal: Inform -> Viz/Presentation: Styled HTML cards with icons -> Interaction: Static display -> Justification: Clear, scannable presentation of core concepts -> Library/Method: HTML/Tailwind.
         - Report Info: 30-Day Schedule -> Goal: Organize/Interact -> Viz/Presentation: Tabbed weeks with clickable day cards -> Interaction: JS-powered content display on click -> Justification: Prevents information overload by showing one day at a time, making the plan actionable -> Library/Method: HTML/Tailwind/JS.
         - Report Info: Content Volume (derived) -> Goal: Compare/Inform -> Viz/Presentation: Bar Chart -> Interaction: Dynamic rendering with tooltips -> Justification: Provides a high-level visual summary of the content effort distribution, adding a data-driven element to the dashboard -> Library/Method: Chart.js/Canvas.
+        - Report Info: Instagram Highlights Strategy -> Goal: Inform/Organize -> Viz/Presentation: Styled HTML cards with creative names and descriptions -> Interaction: Static display -> Justification: Provides a dedicated, easy-to-reference section for a key Instagram feature, enhancing the overall strategic overview -> Library/Method: HTML/Tailwind.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
 
@@ -61,6 +62,7 @@
                 <a href="#overview" class="text-gray-600 hover:text-indigo-600">Overview</a>
                 <a href="#schedule" class="text-gray-600 hover:text-indigo-600">Schedule</a>
                 <a href="#pillars" class="text-gray-600 hover:text-indigo-600">Content Pillars</a>
+                <a href="#highlights" class="text-gray-600 hover:text-indigo-600">Highlights</a>
             </div>
         </nav>
     </header>
@@ -109,7 +111,7 @@
             </div>
         </section>
 
-        <section id="pillars">
+        <section id="pillars" class="mb-16">
             <h2 class="text-3xl font-bold text-center mb-10">Core Content Pillars</h2>
             <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">This plan is built on four key content pillars to ensure a balanced and effective content mix that engages, educates, and builds trust with your audience.</p>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -128,6 +130,53 @@
                 <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow">
                     <h3 class="font-semibold text-lg mb-2 text-indigo-700">4. Social Proof & Community</h3>
                     <p class="text-gray-600">Build credibility through real-world examples. Share user testimonials, case studies, and user-generated content to foster a loyal community around your brand.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="highlights" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-10">Instagram Highlights Strategy</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">Instagram Highlights are crucial for showcasing evergreen content and providing quick access to key information. Organize your best stories into these themed categories to guide new visitors and reinforce your brand message.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">😩</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Drowning in DMs</h3>
+                    <p class="text-gray-600 text-sm">Save stories that highlight the problem of digital overwhelm, unread messages, and communication stress. This helps new visitors immediately relate to the pain point Zappies-AI solves.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">🤖</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Meet Zappies-AI</h3>
+                    <p class="text-gray-600 text-sm">Compile your introductory stories, mission statements, and "who we are" content here. This is where new followers learn about your brand and what you stand for.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">⚡</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Productivity Power-Ups</h3>
+                    <p class="text-gray-600 text-sm">Showcase stories that clearly articulate the core benefits of using Zappies-AI: time saved, increased efficiency, and overall growth. Use compelling visuals and concise text.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">💡</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Smart Solutions</h3>
+                    <p class="text-gray-600 text-sm">Dedicate this highlight to specific features of Zappies-AI. Use short demos, screenshots, or animated explanations of how each feature works to solve a problem.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">📈</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Efficiency Hacks</h3>
+                    <p class="text-gray-600 text-sm">Save all your valuable, non-promotional productivity and digital wellness tips here. Position yourself as an expert and provide genuine value to your audience.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">⭐</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Success Stories</h3>
+                    <p class="text-gray-600 text-sm">Feature user testimonials, mini-case studies, and any positive feedback or user-generated content. This builds social proof and trust with potential customers.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">🤝</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Join the Fam!</h3>
+                    <p class="text-gray-600 text-sm">Use this highlight for Q&A sessions, community polls, and content that encourages interaction and builds a sense of belonging among your followers.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow text-center">
+                    <div class="text-4xl mb-3">✅</div>
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">Start Your Journey</h3>
+                    <p class="text-gray-600 text-sm">A clear call-to-action highlight. Direct users to your website, sign-up page, or demo request form. Make it easy for them to take the next step.</p>
                 </div>
             </div>
         </section>
