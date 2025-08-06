@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zappies-AI: Interactive Instagram Growth Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .tab-active {
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+        .day-card {
+            transition: all 0.3s ease;
+        }
+        .day-card-active {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3), 0 4px 6px -2px rgba(79, 70, 229, 0.2);
+            background-color: #4f46e5;
+            color: #ffffff;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Chosen Palette: Warm Neutrals (Grays, Indigo) -->
+    <!-- Application Structure Plan: A dashboard-style SPA featuring a top navigation for key sections (Overview, Schedule, Pillars). The core is an interactive weekly/daily schedule where users can click on a day to view its specific tasks in a dynamic content area. This structure breaks down the dense 30-day plan into manageable, non-linear chunks, making it more of a tool than a static document. A chart provides a visual summary of content distribution, enhancing the dashboard feel. This was chosen to transform the static report into a usable, interactive tool for daily reference, which directly addresses the user's goal of making the content easily consumable. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Core Strategy & Pillars -> Goal: Inform -> Viz/Presentation: Styled HTML cards with icons -> Interaction: Static display -> Justification: Clear, scannable presentation of core concepts -> Library/Method: HTML/Tailwind.
+        - Report Info: 30-Day Schedule -> Goal: Organize/Interact -> Viz/Presentation: Tabbed weeks with clickable day cards -> Interaction: JS-powered content display on click -> Justification: Prevents information overload by showing one day at a time, making the plan actionable -> Library/Method: HTML/Tailwind/JS.
+        - Report Info: Content Volume (derived) -> Goal: Compare/Inform -> Viz/Presentation: Bar Chart -> Interaction: Dynamic rendering with tooltips -> Justification: Provides a high-level visual summary of the content effort distribution, adding a data-driven element to the dashboard -> Library/Method: Chart.js/Canvas.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-indigo-600">Zappies-AI Growth Plan</div>
+            <div class="hidden md:flex space-x-8">
+                <a href="#overview" class="text-gray-600 hover:text-indigo-600">Overview</a>
+                <a href="#schedule" class="text-gray-600 hover:text-indigo-600">Schedule</a>
+                <a href="#pillars" class="text-gray-600 hover:text-indigo-600">Content Pillars</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+
+        <section id="overview" class="mb-16">
+            <h1 class="text-4xl font-bold text-center mb-4">30-Day Instagram Growth Dashboard</h1>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">This interactive dashboard translates the Zappies-AI Instagram growth plan into an actionable daily guide. Navigate through the strategy, explore the weekly schedule, and stay on track with your content goals.</p>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-indigo-700">Core Strategy</h3>
+                    <p class="text-gray-600">Every piece of content should follow the **Problem/Solution/Benefit** framework. Identify a pain point, introduce Zappies-AI as the solution, and clearly articulate the positive outcome for the user.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold mb-3 text-indigo-700">Brand Voice</h3>
+                    <p class="text-gray-600">Your brand voice should be **empathetic, knowledgeable, and forward-thinking**. Show you understand your audience's struggles, offer a powerful solution, and are dedicated to their success.</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-8 rounded-lg shadow">
+                <h2 class="text-2xl font-bold text-center mb-4">Monthly Content Distribution</h2>
+                <p class="text-center text-gray-500 mb-6">A visual overview of the content types planned for the 30-day period.</p>
+                <div class="chart-container">
+                    <canvas id="contentMixChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="schedule" class="mb-16">
+            <h2 class="text-3xl font-bold text-center mb-10">Interactive Daily Schedule</h2>
+            
+            <div class="flex justify-center mb-8 border-b border-gray-200">
+                <button data-week="1" class="week-tab tab-active py-4 px-6 block hover:text-indigo-600 focus:outline-none font-medium">Week 1</button>
+                <button data-week="2" class="week-tab py-4 px-6 block hover:text-indigo-600 focus:outline-none font-medium">Week 2</button>
+                <button data-week="3" class="week-tab py-4 px-6 block hover:text-indigo-600 focus:outline-none font-medium">Week 3</button>
+                <button data-week="4" class="week-tab py-4 px-6 block hover:text-indigo-600 focus:outline-none font-medium">Week 4</button>
+            </div>
+
+            <div id="schedule-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+            </div>
+
+            <div id="day-details" class="bg-white p-8 rounded-lg shadow-lg min-h-[300px]">
+                <p class="text-center text-gray-500">Select a day above to see the detailed plan.</p>
+            </div>
+        </section>
+
+        <section id="pillars">
+            <h2 class="text-3xl font-bold text-center mb-10">Core Content Pillars</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">This plan is built on four key content pillars to ensure a balanced and effective content mix that engages, educates, and builds trust with your audience.</p>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow">
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">1. Problem-Oriented Content</h3>
+                    <p class="text-gray-600">Resonate with your audience's struggles to build empathy and establish Zappies-AI as a relevant solution. Focus on their pain points with digital overwhelm and communication frustrations.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow">
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">2. Product Education</h3>
+                    <p class="text-gray-600">Clearly explain what Zappies-AI does, how it works, and its specific features in an easy-to-understand manner. Use carousels, demos, and infographics.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow">
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">3. Productivity & Growth Tips</h3>
+                    <p class="text-gray-600">Provide genuine value by sharing non-promotional content. This positions you as an authority in productivity and digital efficiency, building trust beyond your product.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow hover:shadow-xl transition-shadow">
+                    <h3 class="font-semibold text-lg mb-2 text-indigo-700">4. Social Proof & Community</h3>
+                    <p class="text-gray-600">Build credibility through real-world examples. Share user testimonials, case studies, and user-generated content to foster a loyal community around your brand.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white mt-16">
+        <div class="container mx-auto px-6 py-4 text-center">
+            <p>&copy; 2025 Zappies-AI. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const growthPlan = {
+            week1: {
+                goal: "Hook your audience by highlighting their pain points and introduce Zappies-AI as the solution.",
+                days: [
+                    { day: 1, title: "The Overwhelm Hook", post: "Visual: Use the 'subtle, blurred image of a stack of unread WhatsApp messages or a frustrated person' you previously generated. Ensure the image is dark-themed and conveys a sense of digital overwhelm. Caption: **Headline:** Drowning in unread WhatsApp messages? 😫 **Body:** You're not alone. The constant notifications can feel like a never-ending battle, stealing your focus and peace of mind. Is your phone a tool for connection or just another source of stress? **Call to Action:** Let us know below how many unread messages are in your inbox right now! 👇 **Hashtags:** #DigitalBurnout #WhatsAppStress #NotificationOverload #WorkLifeBalance #ProductivityHacks", stories: ["Poll: How many unread messages?", "Question: What's the first thing you do?", "Text: It's time for a change."] },
+                    { day: 2, title: "The Promise", post: "No static post. Focus on Stories.", stories: ["Text: Imagine a world where WhatsApp works for you.", "Image: AI robot icon. 'Coming soon.'", "Quiz: True or False: More messages = more productivity."] },
+                    { day: 3, title: "Introducing Zappies-AI", post: "Visual: Use the 'stylized, friendly AI robot or a lightning bolt icon' with the subtly integrated WhatsApp logo you previously generated. This image should be clean, modern, and convey intelligence and helpfulness. Caption: **Headline:** Meet Zappies-AI! ✨ Your Intelligent WhatsApp Partner. **Body:** We're here to transform your digital communication from chaotic to controlled. Zappies-AI takes the load off your messaging, so you can focus on what truly matters. **Call to Action:** Say hello to effortless productivity! Link in bio to discover more. **Hashtags:** #ZappiesAI #AIAutomation #SmartMessaging #NewTech #FutureOfWork #Efficiency #Innovation", stories: ["Text: What is Zappies-AI?", "Image: Clean UI mockup.", "Link Sticker: Learn more."] },
+                    { day: 4, title: "Audience Engagement", post: "No static post. Focus on Stories.", stories: ["Question: Biggest WhatsApp pet peeve?", "Image: A clock. 'Reclaim your time.'", "Text: We're building the future."] },
+                    { day: 5, title: "Core Benefits Carousel", post: "Visual: A 3-slide carousel. Use the 'simplistic, dark-themed background image with the visual on the right' you previously generated, but ensure the left side is clean for text. Each slide should feature a bold, clear benefit text overlay on the left, with subtle visual elements on the right. **Slide 1 Text:** UNLOCK SUSTAINABLE GROWTH. **Slide 2 Text:** BOOST YOUR PRODUCTIVITY. **Slide 3 Text:** RECLAIM YOUR TIME. Caption: **Headline:** Your Time is Valuable. It's Time to Take it Back. **Body:** Zappies-AI isn't just about managing messages; it's about giving you back control over your day and your goals. Swipe to discover the core benefits that will transform your workflow. **Call to Action:** What would you do with more free time? Share in the comments! 👇 **Hashtags:** #TimeManagement #ProductivityHacks #WorkSmarter #Efficiency #BusinessGrowth #AIforBusiness", stories: ["Poll: Which benefit excites you most?", "Text: Imagine what you could achieve...", "Link Sticker: Sign up!"] },
+                    { day: 6, title: "Weekend Vibe", post: "No static post. Focus on Stories.", stories: ["Image: Calming visual. 'The feeling of a clear inbox.'", "Text: Weekend vibes, by automation.", "Question: Favorite weekend activity?"] },
+                    { day: 7, title: "Weekend Reflection", post: "Visual: A minimalist graphic featuring your Zappies-AI logo prominently on a soft, dark background. The overall aesthetic should be calm and reflective. Caption: **Headline:** Weekend Reflection: Why We Built Zappies-AI. **Body:** Behind Zappies-AI is a simple philosophy: technology should empower, not overwhelm. We built this because we believe everyone deserves to spend less time managing messages and more time living. **Call to Action:** What's your Sunday reflection? Share your thoughts below. #FoundersStory #TechForGood #WorkLifeBalance #DigitalWellbeing #Mission", stories: ["Text: Our mission: Simplify your digital life.", "Image: Quote about freedom.", "Poll: Ready for a productive week?"] }
+                ]
+            },
+            week2: {
+                goal: "Educate your audience on specific features and build authority with valuable, non-promotional tips.",
+                days: [
+                    { day: 8, title: "Feature: Smart Replies", post: "Visual: A clean graphic illustrating a chat bubble with an AI-generated reply suggestion. Use a dark background with bright, readable text for the suggested reply. Caption: **Headline:** Never Type the Same Reply Again! 💬 **Body:** Tired of typing the same answers over and over? Our Smart Reply feature learns from your conversations and suggests quick, relevant responses, tailored to your unique style. **Call to Action:** Save precious seconds on every message! Discover more smart features via the link in bio. **Hashtags:** #SmartReplies #AIinAction #TimeSaver #AutomatedCommunication #EfficiencyTips #ZappiesAI", stories: ["Demo of Smart Replies.", "Poll: Would this save you time?", "Text: Efficiency at your fingertips."] },
+                    { day: 9, title: "Quick Tip", post: "No static post.", stories: ["Question: Most repetitive message?", "Fact: 'Avg checks phone 80 times/day!'", "Tip: Batch your replies."] },
+                    { day: 10, title: "Productivity Tip", post: "Visual: A clean, engaging infographic explaining the 2-minute rule. Use a dark background with contrasting, easy-to-read text. Include simple icons for 'task' and 'timer'. Caption: **Headline:** Boost Productivity Instantly: The 2-Minute Rule! ⏱️ **Body:** If a task takes less than 2 minutes, do it immediately. This simple rule can transform your workflow and clear your mental clutter. **Call to Action:** How do you tackle quick tasks? Share your tips with our community! #ProductivityTips #WorkFlow #EfficiencyHacks #TimeManagement #LifeHacks", stories: ["Applying the 2-min rule to WhatsApp.", "Poll: Do you use this rule?", "Text: Small changes, big impact."] },
+                    { day: 11, title: "Engagement", post: "No static post.", stories: ["This or That: Manual vs. Automated Replies.", "Text: The future is smart, not busy.", "Link Sticker: Explore Features."] },
+                    { day: 12, title: "Beyond Messages", post: "Visual: An abstract, futuristic graphic showing interconnected AI concepts, like glowing neural networks or data flow on a dark background. Caption: **Headline:** Beyond Just Messages: The Power of AI. 🧠 **Body:** AI is more than just automation; it's about intelligent assistance that can revolutionize your entire workflow. Imagine AI managing your calendar or summarizing long conversations. **Call to Action:** What AI task would you love to see next? Let us know! #FutureOfAI #Innovation #TechTrends #AIRevolution #SmartSolutions", stories: ["Q&A: Ask us about AI!", "Text: AI takes tedious tasks, not jobs.", "Image: AI brain icon."] },
+                    { day: 13, title: "Weekend Learning", post: "No static post.", stories: ["Poll: Excited about AI's potential?", "Link: Weekend reading on AI trends.", "Image: Relaxed, weekend theme."] },
+                    { day: 14, title: "Digital Detox", post: "Visual: A calming image, perhaps a blurred nature scene or a serene workspace with a phone face down. Use soft, muted colors. Caption: **Headline:** Your Sunday Reset: Embrace the Digital Detox. 🧘‍♀️ **Body:** Take a moment to disconnect and recharge. A digital detox can reset your mind, boost creativity, and improve your overall well-being. **Call to Action:** With Zappies-AI handling your essentials, you can truly unplug. How do you digitally detox? Share your methods! #DigitalDetox #SelfCare #Mindfulness #Unplug #Wellness", stories: ["Text: Prioritize your well-being.", "Quiz: How long can you go without your phone?", "Text: Ready for the week ahead?"] }
+                ]
+            },
+            week3: {
+                goal: "Build credibility through social proof and foster a sense of community.",
+                days: [
+                    { day: 15, title: "User Spotlight", post: "Visual: A professionally designed graphic featuring a placeholder for a user's photo (or a generic, friendly user icon if no photo is available). Include a large, impactful quote from them about how Zappies-AI saved them time or boosted productivity. Use your brand colors. Caption: **Headline:** Real Results, Real Impact! 🌟 **Body:** We're incredibly proud of the difference Zappies-AI is making in our users' lives. Hear from [User Name/Job Title]: '[Quote about saving time/productivity with Zappies-AI].' **Call to Action:** We love hearing your success stories! Share yours with us via DM. #CustomerSuccess #Testimonial #RealResults #UserStory #ClientLove", stories: ["Text: Our users are loving the time they save!", "Poll: Biggest impact of Zappies-AI?", "Image: 'Thank You' graphic."] },
+                    { day: 16, title: "Gather Feedback", post: "No static post.", stories: ["Question: What feature next?", "Text: We evolve based on YOUR feedback.", "Image: Feedback loop graphic."] },
+                    { day: 17, title: "A Day in the Life", post: "Visual: A clean infographic or series of 3-4 simple icons depicting a user's day, with Zappies-AI seamlessly integrated. Use a timeline or flow. Example icons: 'Sun rising' for morning, 'laptop' for work, 'person relaxing' for evening. Caption: **Headline:** Your Day, Simplified. ✨ **Body:** Imagine a workflow where routine messages are handled, allowing you to dedicate your energy to high-impact tasks. Zappies-AI works silently in the background, ensuring you stay productive and focused. **Call to Action:** How would your ideal, simplified day look? Share your vision! #DailyRoutine #WorkLifeIntegration #SmartLiving #ProductiveDay #Efficiency", stories: ["Video: Snippets of a productive day.", "Poll: Ready for a smoother workday?", "Text: Your time, optimized."] },
+                    { day: 18, title: "Build Transparency", post: "No static post.", stories: ["Q&A: Ask about our development!", "Fun Fact: Our AI is always learning.", "Image: AI brain icon."] },
+                    { day: 19, title: "Community Question", post: "Visual: A vibrant, engaging graphic with a large, central question mark and subtle AI/productivity elements. Use your brand colors. Caption: **Headline:** Community Question: What's Your Go-To Productivity Hack? 🚀 **Body:** We're all about working smarter, not just harder! What's that one brilliant productivity hack you swear by? Share your wisdom with the Zappies-AI community below! **Call to Action:** Let's learn from each other and boost our collective efficiency! #Community #ProductivityCommunity #ShareYourTips #LearnAndGrow #WorkSmarter", stories: ["Question: Share your best productivity tip!", "Text: Learning from the best (you!)", "Link: Join our community group!"] },
+                    { day: 20, title: "Weekend Motivation", post: "No static post.", stories: ["Image: Uplifting quote.", "Text: Prioritize rest, Zappies-AI handles the rest.", "Poll: Feeling more productive?"] },
+                    { day: 21, title: "The Power of Focus", post: "Visual: A minimalist image of a person deeply focused on a task (e.g., studying, working on a laptop), with a subtle, blurred background to emphasize concentration. Use soft lighting. Caption: **Headline:** Unlock Your Superpower: Focus. 🎯 **Body:** In a world of constant digital noise and distractions, true focus is your most valuable asset. Zappies-AI helps clear the digital clutter, so you can dedicate your energy to high-impact tasks and achieve your goals. **Call to Action:** What are you focusing on achieving this week? Let us know! #Focus #DeepWork #DigitalWellness #MindfulProductivity #GoalSetting", stories: ["Text: Ready to crush your goals?", "Image: Goal setting checklist.", "Link: Start your journey."] }
+                ]
+            },
+            week4: {
+                goal: "Drive conversions and reinforce the long-term value of Zappies-AI.",
+                days: [
+                    { day: 22, title: "Productivity Upgrade", post: "Visual: A powerful, dynamic image representing growth and efficiency. Use the dark-themed background image with the visual elements concentrated on the right side. The left side should be clean for text. Caption: **Headline:** Your Ultimate Productivity Upgrade is Here. 🚀 **Body:** It's time to elevate your workflow. Zappies-AI is the intelligent tool designed to automate tedious tasks, significantly boost your productivity, and reclaim your invaluable time. **Call to Action:** Stop managing messages, start managing your success. Ready to transform your workflow? Click the link in bio to get started! #ProductivityUpgrade #AIforBusiness #DigitalTransformation #SmartSolutions #Efficiency", stories: ["Link Sticker: Get Zappies-AI Now!", "Text: Imagine a week with less stress.", "Countdown Sticker for offer."] },
+                    { day: 23, title: "Address Pain Points", post: "No static post.", stories: ["Poll: What's holding you back?", "Text: Zappies-AI solves that.", "Image: Highlight a key feature again."] },
+                    { day: 24, title: "Case Study Snippet", post: "Visual: A compelling graphic featuring a statistic or a short, impactful quote from a case study. Use a clean, professional design with brand colors. Example: 'Saved 15 hours/week!' or 'Boosted response rate by 30%'. Caption: **Headline:** Real Results: [Company/Person] Saved X Hours with Zappies-AI! 📈 **Body:** See the tangible impact! [Company/Person] leveraged Zappies-AI to save [X] hours per week on WhatsApp communication, allowing them to redirect focus to [core business activity]. **Call to Action:** Imagine what you could achieve with that extra time! Read the full success story via the link in bio. #CaseStudy #BusinessSuccess #Efficiency #TangibleResults #ClientSuccess", stories: ["Text: See the numbers.", "Link: Read the full case study.", "Image: 'Before & After' graphic."] },
+                    { day: 25, title: "Build Trust", post: "No static post.", stories: ["Q&A: What are your questions before trying?", "Text: We're here to help.", "Image: Friendly support icon."] },
+                    { day: 26, title: "The Future is Now", post: "Visual: A sleek, futuristic graphic representing progress and innovation, perhaps a digital pathway leading forward or abstract AI elements. Use dark tones with subtle glowing accents. Caption: **Headline:** The Future is Automated. Are You Ready? 🌐 **Body:** The landscape of work is rapidly changing. Automation isn't just a trend; it's the essential foundation for future efficiency and growth. **Call to Action:** Zappies-AI puts you at the forefront, giving you the intelligent tools to thrive. Embrace the future – visit our link in bio! #FutureOfWork #Innovation #AIRevolution #StayAhead #TechTrends", stories: ["Text: Don't get left behind.", "Poll: Ready to automate more?", "Link: Join the movement!"] },
+                    { day: 27, title: "Final Weekend Push", post: "No static post.", stories: ["Image: Graphic with a CTA overlay.", "Text: Your weekend, powered by Zappies-AI.", "Question: What are you excited to achieve?"] },
+                    { day: 28, title: "Thank You & Next Steps", post: "Visual: A simple, heartfelt graphic with your Zappies-AI logo, perhaps with a subtle, celebratory element like confetti or a gentle glow. Caption: **Headline:** A Huge Thank You to Our Growing Community! 🎉 **Body:** As we wrap up this 30-day journey, we want to extend our sincere gratitude for your incredible engagement and support. You inspire us! We're committed to continuously improving Zappies-AI to empower you further. **Call to Action:** What's next for you? Stay connected and subscribe to our newsletter for exclusive updates! #ThankYou #CommunityLove #ZappiesAIJourney #Gratitude #FutureUpdates", stories: ["Text: Your feedback drives us.", "Image: Tease a future update.", "Link: Subscribe to our newsletter."] },
+                    { day: 29, title: "Best Of: Recap", post: "No static post.", stories: ["Re-share most popular stories from the month with link stickers."] },
+                    { day: 30, title: "Best Of: Final Push", post: "No static post.", stories: ["Continue re-sharing impactful stories with clear CTAs."] }
+                ]
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const weekTabs = document.querySelectorAll('.week-tab');
+            const scheduleGrid = document.getElementById('schedule-grid');
+            const dayDetailsContainer = document.getElementById('day-details');
+            let activeDayCard = null;
+
+            function displayWeek(weekNumber) {
+                scheduleGrid.innerHTML = '';
+                const weekData = growthPlan[`week${weekNumber}`];
+                
+                weekData.days.forEach(dayData => {
+                    const dayCard = document.createElement('div');
+                    dayCard.className = 'day-card cursor-pointer p-4 bg-white rounded-lg shadow text-center hover:bg-indigo-500 hover:text-white hover:shadow-lg';
+                    dayCard.innerHTML = `<div class="font-bold">Day ${dayData.day}</div><div class="text-xs">${dayData.title}</div>`;
+                    dayCard.dataset.week = weekNumber;
+                    dayCard.dataset.day = dayData.day;
+                    scheduleGrid.appendChild(dayCard);
+                });
+            }
+
+            function displayDayDetails(weekNumber, dayNumber) {
+                const dayData = growthPlan[`week${weekNumber}`].days.find(d => d.day == dayNumber);
+                if (!dayData) return;
+
+                let storiesHtml = dayData.stories.map(story => `<li>${story}</li>`).join('');
+
+                dayDetailsContainer.innerHTML = `
+                    <h3 class="text-2xl font-bold mb-2 text-indigo-700">Day ${dayData.day}: ${dayData.title}</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-semibold text-lg mb-2">Static Post Plan</h4>
+                            <p class="text-gray-600">${dayData.post}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-lg mb-2">Stories Plan</h4>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1">${storiesHtml}</ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            weekTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    weekTabs.forEach(t => t.classList.remove('tab-active'));
+                    tab.classList.add('tab-active');
+                    const weekNumber = tab.dataset.week;
+                    displayWeek(weekNumber);
+                    dayDetailsContainer.innerHTML = `<p class="text-center text-gray-500">Select a day above to see the detailed plan. The goal for this week is: <strong>${growthPlan[`week${weekNumber}`].goal}</strong></p>`;
+                    if (activeDayCard) {
+                        activeDayCard.classList.remove('day-card-active');
+                        activeDayCard = null;
+                    }
+                });
+            });
+
+            scheduleGrid.addEventListener('click', (e) => {
+                const dayCard = e.target.closest('.day-card');
+                if (dayCard) {
+                    if (activeDayCard) {
+                        activeDayCard.classList.remove('day-card-active');
+                    }
+                    dayCard.classList.add('day-card-active');
+                    activeDayCard = dayCard;
+
+                    const { week, day } = dayCard.dataset;
+                    displayDayDetails(week, day);
+                }
+            });
+
+            displayWeek(1);
+            dayDetailsContainer.innerHTML = `<p class="text-center text-gray-500">Select a day above to see the detailed plan. The goal for this week is: <strong>${growthPlan.week1.goal}</strong></p>`;
+
+            const ctx = document.getElementById('contentMixChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Static Posts', 'Story Days', 'Highlight Updates'],
+                    datasets: [{
+                        label: 'Content Volume',
+                        data: [15, 28, 8],
+                        backgroundColor: [
+                            'rgba(79, 70, 229, 0.6)',
+                            'rgba(99, 102, 241, 0.6)',
+                            'rgba(129, 140, 248, 0.6)'
+                        ],
+                        borderColor: [
+                            'rgba(79, 70, 229, 1)',
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(129, 140, 248, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
